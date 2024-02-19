@@ -3,17 +3,20 @@
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
 from models.base_model import BaseModel, Base
-from models.city import City
+from os import getenv
 
 
 class State(BaseModel, Base):
     """ State class """
     __tablename__ = 'states'
 
-    name = Column(String(128), nullable=False)
-    
-    # For DBStorage
-    cities = relationship("City", backref="state", cascade="all, delete")
+    if getenv("HBNB_TYPE_STORAGE") == 'db':
+        name = Column(String(128), nullable=False)
+
+        # For DBStorage
+        cities = relationship("City", backref="state", cascade="all, delete")
+    else:
+        name = ""
 
     # For FileStorage
     @property
@@ -24,8 +27,6 @@ class State(BaseModel, Base):
         """
         from models import storage
         city_instances = storage.all(City)
-        for city in city_instances.values():
-            if city.state_id == self.id:
-                return city
-
-    # name = ""
+        matching_cities = [city for city in city_instances.values()
+                           if city.state_id == self.id]
+        return matching_cities
