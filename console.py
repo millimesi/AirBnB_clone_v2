@@ -115,27 +115,27 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, args):
-        """Create an object of any class"""
+        # Create an object of any class
         if not args:
             print("** class name missing **")
             return
         class_name, *parameters = args.split()
-        # print(class_name)
-        # print(*parameters)
-
+        # print(parameters)
         if class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
 
-        new_instance = HBNBCommand.classes[class_name]()
+        result_dict = {}
 
         for params in parameters:
             key_and_value = params.split("=")
+            # print(key_and_value)
             if len(key_and_value) != 2:
                 print("Wrong parameter format. Format '<key name>=<value>'")
                 continue
             key, value = key_and_value
-
+            # print(key)
+            # print(value)
             # Handle string values
             if value.startswith('"') and value.endswith('"'):
                 value = value[1:-1]
@@ -151,14 +151,19 @@ class HBNBCommand(cmd.Cmd):
                     value = value.replace('\\', '')  # Remove escaped backslash
                     value = value.replace('_', ' ')
 
-            # setattr(new_instance, key, value)
+            # result_dict = {key:value}
+            result_dict[key] = value
+        # print(result_dict)
 
-            # Ensure that the attribute exists in the class
-            if hasattr(new_instance, key):
-                setattr(new_instance, key, value)
-            else:
-                print(f"Attribute {key} does not exist in class {class_name}")
-        storage.new(new_instance)
+        new_instance = HBNBCommand.classes[class_name](**result_dict)
+
+        # Ensure that the attribute exists in the class
+        if hasattr(new_instance, key):
+            setattr(new_instance, key, value)
+        else:
+            print(f"Attribute {key} does not exist in class {class_name}")
+
+        # storage.new(new_instance)
         storage.save()
 
         print(new_instance.id)
