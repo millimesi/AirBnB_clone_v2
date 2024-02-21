@@ -120,7 +120,6 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
         class_name, *parameters = args.split()
-        # print(parameters)
         if class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
@@ -129,13 +128,10 @@ class HBNBCommand(cmd.Cmd):
 
         for params in parameters:
             key_and_value = params.split("=")
-            # print(key_and_value)
             if len(key_and_value) != 2:
                 print("Wrong parameter format. Format '<key name>=<value>'")
                 continue
             key, value = key_and_value
-            # print(key)
-            # print(value)
             # Handle string values
             if value.startswith('"') and value.endswith('"'):
                 value = value[1:-1]

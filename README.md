@@ -2,7 +2,7 @@
 
 This repository contains the initial stage of a student project to build a clone of the AirBnB website. This stage implements a backend interface, or console, to manage program data. Console commands allow the user to create, update, and destroy objects, as well as manage file storage. Using a system of JSON serialization/deserialization, storage is persistent between sessions.
 
-However, from where the student stopped using file storage, it was updated to using a database for storage.
+However, from where the student stopped using file storage, it was updated to using a database for storage. On this project the Database storage system is connected to the Airbnb Clone.
 
 ---
 
