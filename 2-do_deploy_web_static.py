@@ -51,32 +51,34 @@ def do_deploy(archive_path):
         return False
 
     # Upload the archive to the /tmp/ directory of the web server
-    for host in env.hosts:
-        with Connection(host=host):
-            # Remote path for extraction
-            remote_tmp_path = "/tmp/"
-            put(archive_path, remote_tmp_path)
+    try:
+        # Remote path for extraction
+        remote_tmp_path = "/tmp/"
+        put(archive_path, remote_tmp_path)
 
-            # Extract the archive to the /data/web_static/releases/ directory
-            archive_filename = os.path.basename(archive_path)
-            arc_name_new = os.path.splitext(archive_filename)[0]
-            release_path = "/data/web_static/releases/{}".format(arc_name_new)
-            path = os.path.join(remote_tmp_path, archive_filename)
-            run("mkdir -p {}".format(release_path))
-            run("tar -xzf {} -C {}".format(path, release_path))
+        # Extract the archive to the /data/web_static/releases/ directory
+        archive_filename = os.path.basename(archive_path)
+        arc_name_new = os.path.splitext(archive_filename)[0]
+        release_path = "/data/web_static/releases/{}".format(arc_name_new)
+        path = os.path.join(remote_tmp_path, archive_filename)
+        run("mkdir -p {}".format(release_path))
+        run("tar -xzf {} -C {}".format(path, release_path))
 
-            # Remove the archive from the /tmp/ directory on the web server
-            run("rm {}".format(path))
+        # Remove the archive from the /tmp/ directory on the web server
+        run("rm {}".format(path))
 
-            # Move the contents to the proper location
-            run("mv {}/web_static/* {}".format(release_path, release_path))
-            run("rm -rf {}/web_static".format(release_path))
+        # Move the contents to the proper location
+        run("mv {}/web_static/* {}".format(release_path, release_path))
+        run("rm -rf {}/web_static".format(release_path))
 
-            # Delete the symbolic link from the web server
-            run("rm /data/web_static/current")
+        # Delete the symbolic link from the web server
+        run("rm /data/web_static/current")
 
-            # Create a new the symbolic link /data/web_static/current on
-            # the web server, linked to the new version of your code
-            # (/data/web_static/releases/<archive filename without extension>)
-            run("ln -sf {} /data/web_static/current".format(release_path))
-    return True
+        # Create a new the symbolic link /data/web_static/current on
+        # the web server, linked to the new version of your code
+        # (/data/web_static/releases/<archive filename without extension>)
+        run("ln -sf {} /data/web_static/current".format(release_path))
+        return True
+    except Exception as e:
+        print(e)
+        return False
