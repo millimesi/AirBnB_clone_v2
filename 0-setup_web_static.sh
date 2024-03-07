@@ -1,26 +1,17 @@
 #!/usr/bin/env bash
-# A bash script that sets up my web servers for the deployment of web_static
-
-# update
-sudo apt-get -y update
-
-# Install nginx if not installed
-if [ ! -e /etc/nginx ]; then
-  sudo apt-get -y install nginx
+# A script that sets up my server
+if ! command -v nginx &> /dev/null; then
+    # Install Nginx
+    sudo apt-get update
+    sudo apt-get install nginx -y
 fi
-
-# start nginx
-sudo service nginx start
-
-# Create necessary directory structure under /data/web_static
+#create the directory
 for dir in /data/web_static/releases/test /data/web_static/shared; do
   if [ ! -d "$dir" ]; then
     sudo mkdir -p "$dir"
   fi
 done
-
-# Create a fake HTML file /data/web_static/releases/test/index.html (with simple content, to test your Nginx configuration)
-sudo touch /data/web_static/releases/test/index.html
+#create the test html
 echo "<html>
   <head>
   </head>
@@ -29,14 +20,16 @@ echo "<html>
   </body>
 </html>" | sudo tee /data/web_static/releases/test/index.html > /dev/null
 
-# Create symbolic link /data/web_static/current linked to the /data/web_static/releases/test/ folder
+# Create symbolic link 
 sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
 
-# Give ownership of the /data/ folder to the ubuntu user AND group
+#give owner ship
 sudo chown -R ubuntu:ubuntu /data/
 
 # Update Nginx configuration
-sudo sed -i '/server_name _;/a\\tlocation /hbnb_static {\n\t\talias /data/web_static/current/;\n\t}' /etc/nginx/sites-available/default
-
+if ! grep -q "location /hbnb_static" /etc/nginx/sites-available/default; then
+    # If it doesn't exist, add the directive
+    sudo sed -i '/server_name _;/a\\tlocation /hbnb_static {\n\t\talias /data/web_static/current/;\n\t}' /etc/nginx/sites-available/default
+fi
 # restart Nginx
 sudo service nginx restart
