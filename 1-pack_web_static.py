@@ -14,13 +14,13 @@ def do_pack():
     try:
         #create the file name
         creation_time = datetime.now().strftime("%Y%m%d%H%M%S")
-        Z_fil_name = "web_static_{}".format(creation_time)
+        Z_fil_name = "web_static_{}.tgz".format(creation_time)
 
         #create the version folder
         local("mkdir -p versions")
 
         #compress the file
-        local("tar vczf versions/{} web_static".format(Z_fil_name))
+        local("tar -vczf versions/{} web_static".format(Z_fil_name))
         return os.path.join("versions", Z_fil_name)
     except Exception:
         return None
