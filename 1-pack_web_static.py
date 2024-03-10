@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-''' 
+'''
 Fabric Script
 '''
 
@@ -12,14 +12,14 @@ import os
 def do_pack():
     '''Compress the webstatic doc'''
     try:
-        #create the file name
+        # create the file name
         creation_time = datetime.now().strftime("%Y%m%d%H%M%S")
         Z_fil_name = "web_static_{}.tgz".format(creation_time)
 
-        #create the version folder
+        # create the version folder
         local("mkdir -p versions")
 
-        #compress the file
+        # compress the file
         local("tar -vczf versions/{} web_static".format(Z_fil_name))
         return os.path.join("versions", Z_fil_name)
     except Exception:
