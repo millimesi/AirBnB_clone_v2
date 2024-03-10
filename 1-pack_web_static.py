@@ -1,5 +1,8 @@
 #!/usr/bin/python3
-""" A Fabric script"""
+''' 
+Fabric Script
+'''
+
 
 from fabric.api import local
 from datetime import datetime
@@ -7,29 +10,17 @@ import os
 
 
 def do_pack():
-    """
-    Generate a .tgz archive from the contents of the web_static folder.
-
-    Returns:
-        str: Archive path if generated successfully, None otherwise.
-    """
+    '''Compress the webstatic doc'''
     try:
-        # create 'versions' folder
+        #create the file name
+        creation_time = datetime.now().strftime("%Y%m%d%H%M%S")
+        Z_fil_name = "web_static_{}".format(creation_time)
+
+        #create the version folder
         local("mkdir -p versions")
 
-        # Create archive name with the current timestamp
-        now = datetime.now()
-        timestamp = now.strftime("%Y%m%d%H%M%S")
-        archive_name = "web_static_{}.tgz".format(timestamp)
-
-        # Compress the contents of the web_static folder
-        # c: Create a new archive.
-        # v: Verbosely list the files processed.
-        # z: Compress the archive using gzip.
-        # f: Use archive file specified.
-        local("tar -czvf versions/{} web_static".format(archive_name))
-
-        # Returns archive path if successful
-        return os.path.join("versions", archive_name)
+        #compress the file
+        local("tar vczf versions/{} web_static".format(Z_fil_name))
+        return os.path.join("versions", Z_fil_name)
     except Exception:
         return None
