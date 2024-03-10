@@ -9,8 +9,8 @@ from datetime import datetime
 import os
 
 env.hosts = ['54.157.179.66', '100.25.35.151']
-env.user = "ubuntu"
-env.key_filename = "~/.ssh/school"
+# env.user = "ubuntu"
+# env.key_filename = "~/.ssh/school"
 
 
 def do_pack():
@@ -33,7 +33,6 @@ def do_pack():
 def do_deploy(archive_path):
     ''' deploy the web static'''
     if not os.path.exists(archive_path):
-        print('the path doesnt exist')
         return False
     try:
         arc_name = os.path.basename(archive_path)
@@ -48,8 +47,7 @@ def do_deploy(archive_path):
         run('rm -rf /data/web_static/current')
         run('ln -s {} /data/web_static/current'.format(release_path))
         return True
-    except Exception as e:
-        print(e)
+    except Exception:
         return False
 # def do_delete(archive_path):
 #     if not os.path.exists(archive_path):
