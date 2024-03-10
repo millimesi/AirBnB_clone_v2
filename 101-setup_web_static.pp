@@ -1,53 +1,18 @@
-# Define the class for web server setup
-class web_server {
-  package { 'nginx':
-    ensure => installed,
-  }
+# setting up web-server for deployment
 
-  service { 'nginx':
-    ensure  => running,
-    enable  => true,
-    require => Package['nginx'],
-  }
-
-  file { '/data/web_static/releases/test':
-    ensure => directory,
-    owner  => 'ubuntu',
-    group  => 'ubuntu',
-    mode   => '0755',
-  }
-
-  file { '/data/web_static/shared':
-    ensure => directory,
-    owner  => 'ubuntu',
-    group  => 'ubuntu',
-    mode   => '0755',
-  }
-
-  file { '/data/web_static/releases/test/index.html':
-    ensure  => present,
-    owner   => 'ubuntu',
-    group   => 'ubuntu',
-    mode    => '0644',
-    content => '<html>
-  <head>
-  </head>
-  <body>
-    Holberton School
-  </body>
-</html>',
-  }
-
-  file { '/data/web_static/current':
-    ensure => link,
-    target => '/data/web_static/releases/test/',
-    owner  => 'ubuntu',
-    group  => 'ubuntu',
-  }
-
-  file { '/etc/nginx/sites-available/default':
-    ensure  => present,
-    content => template('web_server/nginx_config.erb'),
-    notify  => Service['nginx'],
-  }
+exec { 'server setup':
+  command  => "/usr/bin/env bash -c '
+    sudo apt-get -y update &&
+    sudo apt-get -y install nginx &&
+    sudo service nginx start &&
+    sudo mkdir -p /data/web_static/shared/ &&
+    sudo mkdir -p /data/web_static/releases/test/ &&
+    echo \"<html><head></head><body>Holberton School</body></html>\" | sudo tee /data/web_static/releases/test/index.html > /dev/null &&
+    sudo ln -sf /data/web_static/releases/test/ /data/web_static/current &&
+    sudo chown -R ubuntu:ubuntu /data/ &&
+    sudo sed -i \'/server_name _;/a\\tlocation /hbnb_static {\\n\\t\\talias /data/web_static/current/;\\n\\t}\' \
+      /etc/nginx/sites-available/default &&
+    sudo service nginx restart
+  '",
+  provider => shell,
 }
